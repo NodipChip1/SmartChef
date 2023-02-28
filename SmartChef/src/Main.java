@@ -16,6 +16,7 @@ public class Main extends JPanel{
 		
 		frame.pack();
 		frame.setVisible(true);
+		System.out.println("a");
 	}
 
 	public static void main(String[] args) {
