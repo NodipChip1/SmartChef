@@ -138,7 +138,7 @@ public class Main extends JPanel implements ActionListener{
 		
 	public static void main(String[] args) {
 		new Main();
-
+// So I'm not really sure if this works but can someone let me know if it does?
 	}
 
 }
