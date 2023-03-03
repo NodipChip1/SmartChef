@@ -207,6 +207,9 @@ public class MainScreen extends JPanel implements ActionListener{
 			repaint();
 		}
 	private void setAllBounds() {
+		/*
+		 * sets all JButtons, JTextFields, JTextAreas etc to specific size and coordinates
+		 */
 		password.setBounds(550, 400, 400,50);
 		loginEnterButton.setBounds(1200,700,100,50);
 		back2Login.setBounds(0, 0, 100,50);
@@ -222,7 +225,6 @@ public class MainScreen extends JPanel implements ActionListener{
 		
 	public static void main(String[] args) {
 		new Main();
-// So I'm not really sure if this works but can someone let me know if it does?
 	}
 
 }
