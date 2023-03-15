@@ -5,29 +5,25 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.Timer;
-
-public class Main extends JPanel implements ActionListener{
-	private int linkY = 400;
-	private String recipeName;
-	private GridLayout thelayout;
-    private GridBagConstraints gbc;
+public class MainScreen extends JPanel implements ActionListener{
+	private String recipeName, savedIngName, savedRecipeName;
 	private ArrayList<JLabel> hyperLink = new ArrayList<JLabel>();
-	private boolean start, hypePageChange;
+	private boolean start, HypePageChange;
 	private JFrame frame;
-	private JPanel homePanel, panel2;
 	private Container can;
-	private JTextField password, recipeTitle;
+	private JTextField password, recipeTitle, remove;
 	private JTextArea ingredients, homeList;
-	private JScrollPane homeScroll;
-	private JButton loginEnterButton, back2Login, addRecipe, fav, enterRecipe, back2Home;
+	private JButton loginEnterButton, back2Login, addRecipe, fav, enterRecipe, back2Home, remove_nter;
+	private JLabel currentRecipe;
 	private Timer timer;
-	private FontMetrics  fm;
+	private FontMetrics fm;
 	private int page, fmWidth;
 	private BufferedWriter writer = null;
-	private String triedpass = "";
+	private String triedpass = ""; 
 	private ArrayList<String> recs = new ArrayList<String>();
 	public static final int HOME = 1, RECIPE = 3, MATCHES = 2, LOGIN = 0, FAV = 4, NEW=5, SUCCESS=6;
-	
+	private GridLayout thelayout;
+   	private GridBagConstraints gbc;
 
 
 
@@ -38,15 +34,12 @@ public class Main extends JPanel implements ActionListener{
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		can = frame.getContentPane();
 
-		thelayout = new GridLayout(3,2);
-	    this.setLayout(thelayout);
+		this.setLayout(null);
 		
 		setPreferredSize(new Dimension(1500,800));
-		this.setVisible(true);
+		//this.setVisible(true);
 		can.add(this);
 		
-		panel2 = new Panel2(can);
-		//panel2.setVisible(false);
 		
 		frame.pack();
 		
@@ -78,27 +71,12 @@ public class Main extends JPanel implements ActionListener{
 		
 		back2Home = new JButton("Back");
 		back2Home.addActionListener(this);
-		
-		homePanel = new JPanel();
-		homePanel.setLayout(new BorderLayout());
-		
-		homeList = new JTextArea();
-
-		homeList.setLayout(new BorderLayout());
-		homeList.setEditable(true);
-		
-		homeScroll = new JScrollPane(homeList);
-		homeScroll.setVerticalScrollBarPolicy (ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		
-		homePanel.setPreferredSize(new Dimension(800,500));
-		
-		homePanel.add(homeScroll, BorderLayout.CENTER);
 	
 		timer = new Timer(1000/60, this);
 		timer.addActionListener(this);
 		timer.start();
 		
-		hypePageChange = false;
+		HypePageChange = false;
         
 		
 		
@@ -151,10 +129,16 @@ public class Main extends JPanel implements ActionListener{
 		}
 		
 		else if(page == HOME) {
+			g.setColor(Color.BLACK);
+			g.setFont(title);
+			g.drawString("Your Recipes", 500, 100);
+			g.setColor(Color.WHITE);
+			g.fillRect(350,150,750,550);
 			
 		}
 		else if(page == RECIPE) {
-			
+			g.setFont(title);
+			g.drawString(currentRecipe.getName(), 350, 150);
 		}
 		else if(page == MATCHES) {
 			
@@ -201,29 +185,22 @@ public class Main extends JPanel implements ActionListener{
 			if(source.equals(loginEnterButton) || source.equals(password)) {
 				if(readPass("passwords.txt")) {
 					page = HOME;
-				
-					this.setVisible(false);
-					can.add(panel2);
-					panel2.repaint();
-					
-					
-					/*this.add(back2Login);
+			
+					this.add(back2Login);
 					this.add(addRecipe);
-					this.add(homePanel);
 					this.add(fav);
-					*/
-					
-					
-					/*for(JLabel j: hyperLink) {
+	
+					for(JLabel j: hyperLink) {
 						this.add(j);
 					}
-					
 					this.remove(loginEnterButton);
-					this.remove(password);*/
+					this.remove(password);
+					
 				}
 			}
 			if(source.equals(addRecipe)) {
 				page = NEW;
+				this.setVisible(true);
 				this.add(recipeTitle);
 				this.add(ingredients);
 				this.add(enterRecipe);
@@ -266,7 +243,8 @@ public class Main extends JPanel implements ActionListener{
 				
 			}
 			
-			if(hypePageChange == true) {
+			if(HypePageChange == true) {
+				page = RECIPE;
 				this.add(back2Home);
 				this.remove(back2Login);
 				this.remove(addRecipe);
@@ -274,44 +252,37 @@ public class Main extends JPanel implements ActionListener{
 				for(JLabel j: hyperLink) {
 					this.remove(j);
 				}
-				hypePageChange = false;
+				HypePageChange = false;
 			}
-			
-			if(source.equals(enterRecipe) && recipeTitle.getText()!=null && ingredients.getText()!=null) {
-				recipeName = recipeTitle.getText();
-				hyperLink.add(new JLabel(recipeName));
-				for(JLabel j: hyperLink) {
-					j.setBounds(600,linkY,100,20);
-					linkY += 20;
-					j.addMouseListener(new MouseAdapter() {
-					public void mouseClicked(MouseEvent e) {
-				    	hypePageChange = true;
-				    }
-				    public void mouseEntered(MouseEvent e) {}
-				    public void mouseExited(MouseEvent e) {}
-					}
-					);
-				}
 				
-					 
-				    
+			}			
+			
+			if(source.equals(remove_nter)) {
+				recRead();
+				recRemove(remove.getText());
+				while(recs.size() != 0) {
+					recs.remove(0);
+				}
+			
+			}
+			if(source.equals(enterRecipe)) {
+				recipeName = recipeTitle.getText();
+				hyperAdd(recipeName);
 				page = SUCCESS;
+				
 				this.remove(recipeTitle);
 				this.remove(ingredients);
 				this.remove(enterRecipe);
 				
-			}			
-			
-			if(source.equals(enterRecipe)) {
-				RecRead();
+				recRead();
 				addIngredients(ingredients.getText());
-				RecWrite();
+				recWrite();
 				while(recs.size() != 0) {
 					recs.remove(0);
 				}
 			}
-		//repaint();
-		}
+		repaint();
+
 	}
 	private void setAllBounds() {
 		password.setBounds(550, 400, 400,50);
@@ -323,58 +294,46 @@ public class Main extends JPanel implements ActionListener{
 		ingredients.setBounds(350,350,750,350);
 		enterRecipe.setBounds(1140,700,100,50);
 		back2Home.setBounds(10, 10, 100,50);
-		homePanel.setBounds(300,200,800,500);
+		
 		
 	}
 	
-	public void addIngredients(String s) {
+	public void addIngredients(String s) { // grabs the new ingredients and recipe name when you add a recipe to then add to the database
+		recs.add(":" + recipeTitle.getText() + ";");
 		String[] parse = s.split("\n");
-		recs.add(recipeTitle.getText());
 		for(String s1: parse) {
 			
 			recs.add(s1);
 			
 		}
 		recs.add("n-der");
-
 	}
-
 	
-	public void RecRead(){
-
+	public void recRead(){ // reads all the data in the recipe txt file and adds them to an array list with every recipe so we can then access any recipe 
 		FileReader fr;
 		try {
 			fr = new FileReader("Recipie.txt");
 			Scanner in = new Scanner(fr); 
 			while(in.hasNext()){
-
 				String[] split = in.next().split(",");
-
 				for(String s: split) {
-
 					recs.add(s);
-
 				}
-
 				System.out.println(recs);
-
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
-
-	public void RecWrite()  {
+	public void recWrite()  { // adds any new recipes to the data base
 		FileWriter fw;
 		try {
 			fw = new FileWriter("Recipie.txt");
 			PrintWriter out = new PrintWriter(fw);
-
 			for(String s : recs) {
 				out.print(s);
-				//System.out.println(s);
+				
 				if (s.equals("n-der")) {
 					out.println();
 				}
@@ -388,6 +347,112 @@ public class Main extends JPanel implements ActionListener{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	public void recRemove(String remove)  { // removes a specific recipe from the recipe database
+	 int counter = 0;
+	 int original = 0;
+	 int original2 = 0;
+	 for(int i = 0; i < recs.size(); i++) {
+		 if(recs.get(i).indexOf(":;") !=0) {
+			 if(recs.get(i).contains(remove)) {
+				 counter = i;
+				 System.out.println(recs.get(i));
+				for(int a = i; a < recs.size(); a++) {
+					 if(recs.get(a).contains("n-der")) {
+						 counter++;
+						break;
+					 }
+					 else {
+						 counter++;
+					 }
+				}
+				original = i;
+				break;
+			 }
+		 }
+		 
+	 }
+	 original2 = original;
+	 System.out.println(original);
+	 System.out.println(counter);
+	 while (original2 < counter) {
+		 recs.remove(original);
+		 original2++;
+	 }
+	recWrite();	 
+	
+	}
+	public void hyperRead() {
+		 hyperLink.clear();
+		 recRead();
+		 FileReader fr;
+			try {
+				fr = new FileReader("Recipie.txt");
+				Scanner in = new Scanner(fr);
+				ArrayList<String> split = new ArrayList<String>();
+				while(in.hasNext()){
+					split.add(in.next());
+					
+					System.out.println(recs);
+				}
+				for(String s: split) {
+					if(s.indexOf(":;") != 0) {
+						savedRecipeName = s.substring(s.indexOf(":") +1, s.indexOf(";"));
+						hyperAdd(savedRecipeName);
+					}
+				}
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		recs = new ArrayList<String>();
+	}
+	public void hyperAdd(String s) {
+		hyperLink.add(new JLabel(s));
+		int temp = 300;
+		for(JLabel j: hyperLink) {
+			j.setBounds(600,temp,100,20);
+			temp += 20;
+			j.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+		    	HypePageChange = true;
+		    }
+		 
+		    public void mouseEntered(MouseEvent e) {
+		    }
+		 
+		    public void mouseExited(MouseEvent e) {
+	
+		    }
+			});
+		}
+		temp = 300;
+		ingRead();
+	}
+	
+	public void ingRead() {
+		recRead();
+		 FileReader fr;
+			try {
+				fr = new FileReader("Recipie.txt");
+				Scanner in = new Scanner(fr);
+				ArrayList<String> split = new ArrayList<String>();
+				while(in.hasNext()){
+					split.add(in.next());
+					System.out.println(recs);
+				}
+				for(String s: split) {
+					if(s.indexOf(",") != 0) {
+						int x = s.indexOf(",");
+						savedIngName = s.substring(x + 1,x + s.indexOf(","));
+						System.out.println(savedIngName);
+					}
+				}
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		recs = new ArrayList<String>();
 	}
 	public boolean readPass(String path){
 		boolean r = false;
@@ -406,13 +471,12 @@ public class Main extends JPanel implements ActionListener{
 		}
 		return r;
 	}
-
-
+		
 		
 	public static void main(String[] args) {
 		new Main();
+	
 	}
-
 }
-
-
+	
+	
