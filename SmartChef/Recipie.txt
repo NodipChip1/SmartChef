@@ -1,0 +1,6 @@
+|food1_,food1,water,n-der
+|food2_,food2,water,n-der
+|food3_,food3,water,n-der
+|food4_,food4,water,n-der
+|food5_,food5,water,n-der
+|food6_,food6,water,n-der
