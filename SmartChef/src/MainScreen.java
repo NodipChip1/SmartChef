@@ -231,7 +231,7 @@ public class MainScreen extends JPanel implements ActionListener{
 				this.remove(ingredients);
 				this.remove(enterRecipe);
 				this.remove(back2Home);
-				
+			System.out.println("im going home");
 			}
 			if(HypePageChange == true) {
 				this.add(back2Home);
