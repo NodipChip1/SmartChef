@@ -18,7 +18,7 @@ public class MainScreen extends JPanel implements ActionListener{
 	private JButton loginEnterButton, back2Login, addRecipe, fav, enterRecipe, back2Home, remove_nter;
 	private Timer timer;
 	private FontMetrics fm;
-	private int page, fmWidth, checker1,checker2,checker3,checker4;
+	private int page, fmWidth;
 	private BufferedWriter writer = null;
 	private String triedpass = ""; 
 	private ArrayList<String> recs = new ArrayList<String>();
@@ -227,10 +227,6 @@ public class MainScreen extends JPanel implements ActionListener{
 				while(ingShow.size()>0) {
 					ingShow.remove(0);
 				}
-				checker1 = 0;
-				checker2 = 0;
-				checker3 = 0;
-				checker4 = 0;
 				this.remove(recipeTitle);
 				this.remove(ingredients);
 				this.remove(enterRecipe);
@@ -408,8 +404,7 @@ public class MainScreen extends JPanel implements ActionListener{
 					if(s.indexOf("|_") != 0) {
 						savedRecipeName = s.substring(s.indexOf("|") +1, s.indexOf("_"));
 						hyperLink.add(new JLabel(savedRecipeName));
-						checker4++;
-						System.out.println("hyperead" + checker4);
+						
 					}
 				}
 			} catch (FileNotFoundException e) {
@@ -428,8 +423,7 @@ public class MainScreen extends JPanel implements ActionListener{
 			public void mouseClicked(MouseEvent e) {
 		    	HypePageChange = true;
 		    	ingRead(j.getText());
-		    	checker1 +=1;
-		    	System.out.println("hyperadd" + checker1);
+		    	
 		    }
 		    public void mouseEntered(MouseEvent e) {
 		    }
@@ -463,10 +457,9 @@ public class MainScreen extends JPanel implements ActionListener{
 			 ingShow.add(new JLabel(recs.get(i)));
 			
 		 }
-		 checker2 ++;
+		 
 		ingShower();
 		recs = new ArrayList<String>();
-		System.out.println("ingRead" + checker2);
 	}
 	public void ingShower() {
 		int temp = 300;
@@ -475,8 +468,6 @@ public class MainScreen extends JPanel implements ActionListener{
 			this.add(j);
 			temp+=20;
 		}
-		checker3++;
-		System.out.println("ingShowr" + checker3);
 	}
 	public boolean readPass(String path){
 		boolean r = false;
